@@ -1,5 +1,6 @@
 import wikipedia
 from mcp.server.fastmcp import FastMCP
+from pathlib import Path
 
 mcp = FastMCP("WikipediaSearch")
 
@@ -87,7 +88,18 @@ def get_section_content(topic: str, section_title: str) -> dict:
     except Exception as e:
         return {"error": str(e)}
     
-
+@mcp.resource("file://suggested_titles")
+def suggested_titles() -> list[str]:
+    """
+    Read and return suggested Wikipedia topics from a local file.
+    """
+    try:
+        path = Path("suggested_titles.txt")
+        if not path.exists():
+            return ["File not found"]
+        return path.read_text(encoding="utf-8").strip().splitlines()
+    except Exception as e:
+        return [f"Error reading file: {str(e)}"]
     
 # Run the MCP server
 if __name__ == "__main__":

@@ -3,6 +3,33 @@ from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("WikipediaSearch")
 
+@mcp.prompt()
+def find_fun_fact_prompt(topic: str) -> str:
+    """
+    Finds a fun or interesting fact about the given topic from Wikipedia.
+    """
+    return f"""
+    The user is curious about "{topic}" and wants to learn something fun or interesting.
+
+    Given the list of sections for "{topic}", pick a section and get the section content.
+    Then, find a unique or surprising or interesting fact in that section.
+    Return this fact in a single sentence.
+    """
+
+@mcp.prompt()
+def highlight_sections_prompt(topic: str) -> str:
+    """
+    Identifies the most important sections from a Wikipedia article on the given topic.
+    """
+    return f"""
+    The user is exploring the Wikipedia article on "{topic}".
+
+    Given the list of section titles from the article, choose the 3–5 most important or interesting sections 
+    that are likely to help someone learn about the topic.
+
+    Return a bullet list of these section titles, along with 1-line explanations of why each one matters.
+    """
+
 @mcp.tool()
 def fetch_wikipedia_info(query: str) -> dict:
     """
@@ -59,6 +86,8 @@ def get_section_content(topic: str, section_title: str) -> dict:
             return {"error": f"Section '{section_title}' not found in article '{topic}'."}
     except Exception as e:
         return {"error": str(e)}
+    
+
     
 # Run the MCP server
 if __name__ == "__main__":
